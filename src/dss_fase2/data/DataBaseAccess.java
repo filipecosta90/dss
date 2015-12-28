@@ -26,9 +26,9 @@ public class DataBaseAccess {
   private static Connection Conn;
 
 
-  public DataBaseAccess() {
+  public DataBaseAccess(String hostname, String bd, String user, String password) {
     try {
-      init("localhost", "dss", "dss_USER", "123");
+      init( hostname , bd , user , password );
     } catch (SQLException ex) {
 
       Logger.getLogger(DataBaseAccess.class.getName()).log(Level.SEVERE, null, ex);

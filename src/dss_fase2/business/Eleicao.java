@@ -45,7 +45,7 @@ public class Eleicao {
     this.log_erros_local = new ArrayList < String > (); 
 
   }
-
+  
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
@@ -203,5 +203,9 @@ public class Eleicao {
     
     public TreeMap  <String , Integer> getResultadoGeral(){
         return getResultadoFinal();  
+    }
+    
+    public void populateDataFromDB ( String hostname, String bd, String user, String password ){
+    
     }
 }
