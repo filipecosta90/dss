@@ -1,0 +1,38 @@
+CREATE TABLE cidadao
+(
+cc int NOT NULL,
+nome varchar(80) NOT NULL,
+password varchar(80) NOT NULL,
+permissaoAdmin BOOLEAN DEFAULT FALSE,
+permissaoRR BOOLEAN DEFAULT FALSE,
+permissaoVotoAntecipado BOOLEAN DEFAULT FALSE,
+jaVotou BOOLEAN DEFAULT FALSE,
+PRIMARY KEY (cc)
+);
+
+CREATE TABLE lista
+(
+partidoPolitico varchar(80) NOT NULL,
+candidatos varchar(256) NOT NULL,
+uninominal BOOLEAN DEFAULT FALSE,
+plurinominal BOOLEAN DEFAULT FALSE,
+PRIMARY KEY (partidoPolitico)
+);
+
+CREATE TABLE mapaVotos
+(
+partidoPolitico varchar(80) NOT NULL,
+totalVotos int DEFAULT 0,
+PRIMARY KEY (partidoPolitico)
+);
+
+replace into cidadao ( cc, nome, password, permissaoAdmin, permissaoRR, permissaoVotoAntecipado, jaVotou )  values ( 123 , 'Nani Alves', '77' , false, false, false, false ); 
+replace into cidadao ( cc, nome, password, permissaoAdmin, permissaoRR, permissaoVotoAntecipado, jaVotou )  values ( 6 , 'Filipe Oliveira', 'filipecosta' , false, false, true, false ); 
+replace into cidadao ( cc, nome, password, permissaoAdmin, permissaoRR, permissaoVotoAntecipado, jaVotou )  values ( 92 , 'Bruno Henriques', 'bruno' , true, true, true, false );
+
+replace into lista ( partidoPolitico , candidatos , uninominal , plurinominal )  values ( 'psd' , '123,6', false , true );
+replace into lista ( partidoPolitico , candidatos , uninominal , plurinominal )  values ( 'ps' , '92', false , true );
+
+replace into mapaVotos ( partidoPolitico , totalVotos ) values ( 'psd', 0 );
+replace into mapaVotos ( partidoPolitico , totalVotos ) values ( 'ps', 0 );
+

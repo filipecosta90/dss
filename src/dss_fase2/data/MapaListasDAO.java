@@ -54,7 +54,7 @@ public class MapaListasDAO  implements Map< String , Lista >{
       Lista listaGet = null;
       try {
         String sql;
-        sql = "select * from listas where partidoPolitico=" + key;
+        sql = "select * from lista where partidoPolitico='" + key+"'";
         ResultSet rs = DataBaseAccess.executeQuery(sql);
         if (rs.next()) {
           listaGet = processRow(rs);
@@ -70,8 +70,8 @@ public class MapaListasDAO  implements Map< String , Lista >{
     public Lista put(String key, Lista value) {
       try {
         String sql;
-        sql = "replace into listas ( partidoPolitico, candidadatos, uninominal, plurinominal )  values (" 
-          + value.getPartidoPolitico() + "," + value.getCandidatosString() + "," + value.isUninominal() + "," + value.isPlurinominal() +  ")" ;
+        sql = "replace into lista ( partidoPolitico, candidadatos, uninominal, plurinominal )  values ('" 
+          + value.getPartidoPolitico() + "','" + value.getCandidatosString() + "'," + value.isUninominal() + "," + value.isPlurinominal() +  ")" ;
         ResultSet rs = DataBaseAccess.executeQuery(sql);
       } catch (Exception ex) {
         throw new NullPointerException(ex.getMessage());

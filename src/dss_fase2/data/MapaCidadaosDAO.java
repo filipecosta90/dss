@@ -35,7 +35,7 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
       boolean exists = false;
       try {
         String sql;
-        sql = "select * from cidadaos where CC=" + key;
+        sql = "select * from cidadao where CC = " + key;
         ResultSet rs = DataBaseAccess.executeQuery(sql);
         if (rs.next()) {
           exists = true;
@@ -69,7 +69,7 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
       Cidadao cidGet = null;
       try {
         String sql;
-        sql = "select * from cidadaos where CC=" + key;
+        sql = "select * from cidadao where CC= " + key;
         ResultSet rs = DataBaseAccess.executeQuery(sql);
         if (rs.next()) {
           cidGet = processRow(rs);
@@ -84,8 +84,8 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
     public Cidadao put(Integer key, Cidadao value) {
       try {
         String sql;
-        sql = "replace into cidadaos ( cc, nome, password, permissaoAdmin, permissaoRR, permissaoVotoAntecipado, jaVotou )  values (" 
-          + value.getCC() + "," + value.getNome() + "," + value.getPassword() + "," + value.getPermissaoAdmin() + "," + value.getPermissaoRR() 
+        sql = "replace into cidadao ( cc, nome, password, permissaoAdmin, permissaoRR, permissaoVotoAntecipado, jaVotou )  values (" 
+          + value.getCC() + ",'" + value.getNome() + "','" + value.getPassword() + "'," + value.getPermissaoAdmin() + "," + value.getPermissaoRR() 
           + "," + value.getPermissaoVotoAntecipado() +  "," + value.getJaVotou() + ")" ;
         ResultSet rs = DataBaseAccess.executeQuery(sql);
 

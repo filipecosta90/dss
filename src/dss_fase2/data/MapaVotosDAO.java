@@ -12,6 +12,7 @@ import java.util.Set;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
 /**
  *
  * @author filipeoliveira
@@ -48,7 +49,7 @@ protected Integer processRow(ResultSet rs) throws SQLException {
 Integer votoGet = null;
       try {
         String sql;
-        sql = "select * from mapaVotos where partidoPolitico=" + key;
+        sql = "select * from mapaVotos where partidoPolitico='" + key+"'";
         ResultSet rs = DataBaseAccess.executeQuery(sql);
         if (rs.next()) {
           votoGet = processRow(rs);
@@ -63,8 +64,8 @@ Integer votoGet = null;
     public Integer put(String key, Integer value) {
 try {
         String sql;
-        sql = "replace into mapaVotos ( partidoPolitico, totalVotos )  values (" 
-          + key + "," + value  +  ")" ;
+        sql = "replace into mapaVotos ( partidoPolitico, totalVotos )  values ('" 
+          + key + "' , "  + value  +  ")" ;
         ResultSet rs = DataBaseAccess.executeQuery(sql);
       } catch (Exception ex) {
         throw new NullPointerException(ex.getMessage());

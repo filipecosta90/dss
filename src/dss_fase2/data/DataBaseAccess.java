@@ -27,7 +27,7 @@ public class DataBaseAccess {
 
   public DataBaseAccess() {
     try {
-      init("localhost", "dss", "dss_user", "123456");
+      init("localhost", "dss", "root", "");
     } catch (SQLException ex) {
       Logger.getLogger(DataBaseAccess.class.getName()).log(Level.SEVERE, null, ex);
     }
