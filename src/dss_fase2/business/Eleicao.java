@@ -39,6 +39,7 @@ public class Eleicao {
     this.resultadoFinal = new TreeMap < String , Integer >();
     this.log_erros_local = new ArrayList < String > (); 
   } 
+
 }
 
 

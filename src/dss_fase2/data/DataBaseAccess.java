@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 /**
  *
  * @author filipeoliveira
@@ -27,8 +28,9 @@ public class DataBaseAccess {
 
   public DataBaseAccess() {
     try {
-      init("localhost", "dss", "root", "");
+      init("localhost", "dss", "dss_USER", "123");
     } catch (SQLException ex) {
+
       Logger.getLogger(DataBaseAccess.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
@@ -45,17 +47,19 @@ public class DataBaseAccess {
       props.put("SetBigStringTryClob", "true");
       Conn = DriverManager.getConnection(url, props);
       Conn.setAutoCommit(false);
-    } catch (ClassNotFoundException e) {
-      System.err.println(e.getMessage());
-    }
+    } catch (Exception ex) {
+        throw new NullPointerException(ex.getMessage());
+      }
   }
 
   public static ResultSet executeQuery(String SQLQuery) throws SQLException {
-    ResultSet rset = null;
+
+      ResultSet rset = null;
     Statement stmt = null;
     stmt = Conn.createStatement();
     rset = stmt.executeQuery(SQLQuery);
     return rset;
+
   }
 
   public static boolean close() throws SQLException {
