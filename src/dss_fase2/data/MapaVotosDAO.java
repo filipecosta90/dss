@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author filipeoliveira
  */
-public class MapaVotosDAO implements Map< String , Integer > {
+public class MapaVotosDAO implements Map < String , Integer > {
 
   @Override
     public int size() {
@@ -38,14 +38,38 @@ public class MapaVotosDAO implements Map< String , Integer > {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    
+protected Integer processRow(ResultSet rs) throws SQLException {
+    return rs.getInt("totalVotos");
+  }
+  
   @Override
     public Integer get(Object key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+Integer votoGet = null;
+      try {
+        String sql;
+        sql = "select * from mapaVotos where partidoPolitico=" + key;
+        ResultSet rs = DataBaseAccess.executeQuery(sql);
+        if (rs.next()) {
+          votoGet = processRow(rs);
+        }
+      } catch (Exception ex) {
+        throw new NullPointerException(ex.getMessage());
+      }
+      return votoGet;
     }
 
   @Override
     public Integer put(String key, Integer value) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+try {
+        String sql;
+        sql = "replace into mapaVotos ( partidoPolitico, totalVotos )  values (" 
+          + key + "," + value  +  ")" ;
+        ResultSet rs = DataBaseAccess.executeQuery(sql);
+      } catch (Exception ex) {
+        throw new NullPointerException(ex.getMessage());
+      }
+      return value;
     }
 
   @Override

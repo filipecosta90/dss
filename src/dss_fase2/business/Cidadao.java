@@ -18,6 +18,7 @@ public class Cidadao {
   private boolean permissaoAdmin;
   private boolean permissaoRR;
   private boolean permissaoVotoAntecipado;
+  private boolean sessaoAtiva;
   private boolean jaVotou;
 
   public Cidadao() {
@@ -85,6 +86,8 @@ public class Cidadao {
   public boolean getJaVotou() {
     return jaVotou;
   }
+  
+  
 
 
 }
