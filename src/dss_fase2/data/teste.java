@@ -15,6 +15,7 @@ import java.sql.SQLException;
  * @author filipeoliveira
  */
 public class teste {
+    /*
     public static void main (String args[]) throws ClassNotFoundException{
         try {
             DataBaseAccess novo = new DataBaseAccess();
@@ -31,5 +32,5 @@ public class teste {
     System.out.println("SQLException: " + ex.getMessage());
 
 }
-    }
+    }*/
 }
