@@ -18,7 +18,7 @@ public class Cidadao {
   private boolean permissaoAdmin;
   private boolean permissaoRR;
   private boolean permissaoVotoAntecipado;
-  private boolean sessaoAtiva;
+  private boolean sessaoActiva;
   private boolean jaVotou;
 
   public Cidadao() {
@@ -28,6 +28,7 @@ public class Cidadao {
     this.permissaoAdmin = false;
     this.permissaoRR = false;
     this.permissaoVotoAntecipado = false;
+    this.sessaoActiva = false;
     this.jaVotou = false;
   }
 
@@ -53,6 +54,10 @@ public class Cidadao {
 
   public void setPermissaoVotoAntecipado(boolean permissaoVotoAntecipado) {
     this.permissaoVotoAntecipado = permissaoVotoAntecipado;
+  }
+  
+  public void setSessaoActiva(boolean sessaoActiva){
+      this.sessaoActiva = sessaoActiva;
   }
 
   public void setJaVotou(boolean jaVotou) {
@@ -82,12 +87,51 @@ public class Cidadao {
   public boolean getPermissaoVotoAntecipado() {
     return permissaoVotoAntecipado;
   }
+  
+  public boolean getSessaoActiva(){
+      return sessaoActiva;
+  }
 
   public boolean getJaVotou() {
     return jaVotou;
   }
-  
-  
 
+  public boolean verificaCC_password(Integer cc, String pass){
+      if(cc.equals(this.CC) && pass.equals(this.password))
+          return true;
+      else return false;
+  }
+  
+  public void ativaSessao(){
+      this.setSessaoActiva(true);
+  }
+  
+  public void terminaSessao(){
+      this.setSessaoActiva(false);
+  }
 
+  public boolean podeVotar(){
+      if(this.getJaVotou())
+          return false;
+      else return true;
+  }
+  
+  public boolean podeVotarAntecipadamente(){
+      if(this.getPermissaoVotoAntecipado())
+          return true;
+      else return false;
+  }
+  
+  public boolean verificaPermissoesRR(){
+      if(this.getPermissaoRR())
+          return true;
+      else return false;
+  }
+  
+  public boolean verificaPermissoesAdmin(){
+      if(this.getPermissaoAdmin())
+          return true;
+      else return false;
+  }
+  
 }
