@@ -12,7 +12,7 @@ package dss_fase2.business;
 
 public class Cidadao {
 
-  private Integer CC;
+  private int CC;
   private String nome;
   private String password;
   private boolean permissaoAdmin;

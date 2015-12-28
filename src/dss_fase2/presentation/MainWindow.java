@@ -73,12 +73,12 @@ public class MainWindow extends javax.swing.JFrame {
     this.menuSistema.setVisible(true);
 
     //menu eleitor
-    this.menuEleitor.setVisible(true);
+    this.menuEleitor.setVisible(false);
     
     //menu admin
-    this.menuAdmin.setVisible(true);
+    this.menuAdmin.setVisible(false);
     
-        enablePanel("login");
+    enablePanel("login");
 
 
 
@@ -177,7 +177,6 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap(478, Short.MAX_VALUE))
         );
 
-        painel_admin_apresentar_resultado.setBounds(new java.awt.Rectangle(0, 0, 0, 0));
         painel_admin_apresentar_resultado.setEnabled(false);
         painel_admin_apresentar_resultado.setPreferredSize(new java.awt.Dimension(500, 500));
 
@@ -197,10 +196,9 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(painel_admin_apresentar_resultadoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(478, Short.MAX_VALUE))
+                .addContainerGap(492, Short.MAX_VALUE))
         );
 
-        painel_admin_iniciar_votacao.setBounds(new java.awt.Rectangle(0, 0, 0, 0));
         painel_admin_iniciar_votacao.setEnabled(false);
         painel_admin_iniciar_votacao.setPreferredSize(new java.awt.Dimension(500, 500));
 
@@ -282,6 +280,11 @@ public class MainWindow extends javax.swing.JFrame {
         field_cc.setMinimumSize(new java.awt.Dimension(160, 28));
         field_cc.setPreferredSize(new java.awt.Dimension(160, 28));
         field_cc.setSize(new java.awt.Dimension(160, 28));
+        field_cc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                field_ccActionPerformed(evt);
+            }
+        });
 
         field_password.setPreferredSize(new java.awt.Dimension(160, 28));
         field_password.setSize(new java.awt.Dimension(160, 28));
@@ -328,10 +331,8 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(field_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(butao_login)
-                .addContainerGap(345, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        butao_login.getAccessibleContext().setAccessibleName("Login");
 
         menuSistema.setText("Sistema");
 
@@ -410,7 +411,7 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(painel_admin_apresentar_resultado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(527, 527, 527)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(painel_sistema_logout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -442,10 +443,12 @@ public class MainWindow extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(painel_sistema_logout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(painel_admin_apresentar_resultado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(painel_sistema_logout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 645, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(painel_admin_apresentar_resultado, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(361, 361, 361)
@@ -505,8 +508,28 @@ enablePanel("apresentar_resultado");
   }//GEN-LAST:event_item_apresentar_resultadoActionPerformed
 
     private void butao_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butao_loginActionPerformed
-        // TODO add your handling code here:
+            // TODO add your handling code here:
+        if(cidadaoActivo.verificaCC_password((Integer.parseInt(field_cc.getText())), field_password.getText())){
+            enablePanel("logout");
+            enablePanel("votar");
+        }
+        else System.out.println("Tente Novamente!");
+        
+        if(cidadaoActivo.podeVotarAntecipadamente()){
+            enablePanel("votar_antecipadamente");
+        }
+        
+        if(cidadaoActivo.verificaPermissoesAdmin()){
+            enablePanel("iniciar_votacao");
+            enablePanel("encerrar_votacao");
+            enablePanel("apresentar_resultado");
+        }
+        
     }//GEN-LAST:event_butao_loginActionPerformed
+
+    private void field_ccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_field_ccActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_field_ccActionPerformed
 
   /**
    * @param args the command line arguments
