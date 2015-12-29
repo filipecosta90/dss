@@ -82,9 +82,11 @@ public class MapaListasDAO  implements Map< String , Lista >{
     public Lista put(String key, Lista value) {
       try {
         String sql;
-        sql = "replace into lista ( partidoPolitico, candidadatos, uninominal, plurinominal )  values ('" 
-          + value.getPartidoPolitico() + "','" + value.getCandidatosString() + "'," + value.isUninominal() + "," + value.isPlurinominal() +  ")" ;
-        ResultSet rs = DataBaseAccess.executeQuery(sql);
+        sql = "insert into lista ( partidoPolitico, candidadatos, uninominal, plurinominal )  values ('" 
+          + value.getPartidoPolitico() + "','" + value.getCandidatosString() + "'," + value.isUninominal() + "," + value.isPlurinominal() +  ")" 
+          + " ON DUPLICATE KEY UPDATE partidoPolitico='"+key+"' , candidatos='"+ value.getCandidatosString() 
+          + "', uninominal=" + value.isUninominal() + ", plurinominal=" + value.isPlurinominal() ;
+        DataBaseAccess.executeUpdate(sql);
       } catch (Exception ex) {
         throw new NullPointerException(ex.getMessage());
       }

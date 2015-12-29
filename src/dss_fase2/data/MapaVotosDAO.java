@@ -64,11 +64,11 @@ public class MapaVotosDAO implements Map < String , Integer > {
     public Integer put(String key, Integer value) {
       try {
         String sql;
-        sql = "replace into mapaVotos ( partidoPolitico, totalVotos )  values ('" 
-          + key + "' , "  + value  +  ")" ;
-        ResultSet rs = DataBaseAccess.executeQuery(sql);
-        System.out.println(sql);
-
+        sql = "insert into mapaVotos ( partidoPolitico, totalVotos )  values ('" 
+          + key + "' , "  + value  +  ") " + 
+          " ON DUPLICATE KEY UPDATE partidoPolitico='"+key+"' , totalVotos="+value;
+        System.out.println(sql);       
+        DataBaseAccess.executeUpdate(sql);
       } catch (Exception ex) {
         throw new NullPointerException(ex.getMessage());
       }

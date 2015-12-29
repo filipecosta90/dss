@@ -87,11 +87,15 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
     public Cidadao put(Integer key, Cidadao value) {
       try {
         String sql;
-        sql = "replace into cidadao ( cc, nome, password, permissaoAdmin, permissaoRR, permissaoVotoAntecipado, jaVotou )  values (" 
+        sql = "insert into cidadao ( cc, nome, password, permissaoAdmin, permissaoRR, permissaoVotoAntecipado, jaVotou )  values (" 
           + value.getCC() + ",'" + value.getNome() + "','" + value.getPassword() + "'," + value.getPermissaoAdmin() + "," + value.getPermissaoRR() 
-          + "," + value.getPermissaoVotoAntecipado() +  "," + value.getJaVotou() + ")" ;
-        ResultSet rs = DataBaseAccess.executeQuery(sql);
+          + "," + value.getPermissaoVotoAntecipado() +  "," + value.getJaVotou() + ")" 
+          + " ON DUPLICATE KEY UPDATE cc="+value.getCC()+" , nome='"+ value.getNome() 
+          + "', password='" + value.getPassword() + "' , permissaoAdmin=" + value.getPermissaoAdmin() 
+          + ", permissaoRR=" + value.getPermissaoRR() + ", permissaoVotoAntecipado=" + value.getPermissaoVotoAntecipado()
+          + ", jaVotou=" + value.getJaVotou();
         System.out.println(sql);
+        DataBaseAccess.executeUpdate(sql);
 
       } catch (Exception ex) {
         throw new NullPointerException(ex.getMessage());

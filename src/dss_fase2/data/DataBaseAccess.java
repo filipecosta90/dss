@@ -53,13 +53,19 @@ public class DataBaseAccess {
   }
 
   public static ResultSet executeQuery(String SQLQuery) throws SQLException {
-
     ResultSet rset = null;
     Statement stmt = null;
     stmt = Conn.createStatement();
     rset = stmt.executeQuery(SQLQuery);
     return rset;
+  }
 
+  public static int executeUpdate(String SQLQuery) throws SQLException {
+    int result = -1;
+    Statement stmt = null;
+    stmt = Conn.createStatement();
+    result = stmt.executeUpdate(SQLQuery);
+    return result;
   }
 
   public static boolean close() throws SQLException {
