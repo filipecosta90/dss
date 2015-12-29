@@ -31,7 +31,18 @@ public class MapaVotosDAO implements Map < String , Integer > {
 
   @Override
     public boolean containsKey(Object key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      boolean flag = false;
+      try {
+        String sql;
+        sql = "select * from mapaVotos where partidoPolitico='" + key+"'";
+        ResultSet rs = DataBaseAccess.executeQuery(sql);
+        if (rs.next()) {
+          flag=true;
+        }
+      } catch (Exception ex) {
+        throw new NullPointerException(ex.getMessage());
+      }
+      return flag;
     }
 
   @Override
@@ -62,17 +73,31 @@ public class MapaVotosDAO implements Map < String , Integer > {
 
   @Override
     public Integer put(String key, Integer value) {
-      try {
-        String sql;
-        sql = "insert into mapaVotos ( partidoPolitico, totalVotos )  values ('" 
-          + key + "' , "  + value  +  ") " + 
-          " ON DUPLICATE KEY UPDATE partidoPolitico='"+key+"' , totalVotos="+value;
-        System.out.println(sql);       
-        DataBaseAccess.executeUpdate(sql);
-      } catch (Exception ex) {
-        throw new NullPointerException(ex.getMessage());
+      boolean contem;
+      contem = containsKey( key);
+      if ( contem ){
+        try {
+          String sql;
+          sql = "UPDATE mapaVotos SET totalVotos="+value + " WHERE partidoPolitico='"+key+"'";
+          System.out.println(sql);       
+          DataBaseAccess.executeUpdate(sql);
+        } catch (Exception ex) {
+          throw new NullPointerException(ex.getMessage());
+        }
+      }
+      else {
+        try {
+          String sql;
+          sql = "INSERT INTO mapaVotos ( partidoPolitico, totalVotos )  VALUES ('" 
+            + key + "' , "  + value  +  ") ";
+          System.out.println(sql);       
+          DataBaseAccess.executeQuery(sql);
+        } catch (Exception ex) {
+          throw new NullPointerException(ex.getMessage());
+        }
       }
       return value;
+
     }
 
   @Override

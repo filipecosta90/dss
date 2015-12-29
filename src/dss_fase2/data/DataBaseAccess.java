@@ -28,7 +28,7 @@ public class DataBaseAccess {
 
   public DataBaseAccess() {
     try {
-      init( "localhost" , "dss" , "dss_USER" , "123" );
+      init( "localhost" , "dss" , "root" , "" );
     } catch (SQLException ex) {
 
       Logger.getLogger(DataBaseAccess.class.getName()).log(Level.SEVERE, null, ex);
@@ -38,15 +38,13 @@ public class DataBaseAccess {
   public static void init(String hostname, String bd, String user, String password) throws SQLException {
 
     String url = "jdbc:mysql://" + hostname + "/" + bd + "?";
-
     try {
       Class.forName("com.mysql.jdbc.Driver");
       Properties props = new Properties();
       props.put("user", user);
       props.put("password", password);
-      props.put("SetBigStringTryClob", "true");
       Conn = DriverManager.getConnection(url, props);
-      Conn.setAutoCommit(false);
+      Conn.setAutoCommit(true);
     } catch (Exception ex) {
       throw new NullPointerException(ex.getMessage());
     }

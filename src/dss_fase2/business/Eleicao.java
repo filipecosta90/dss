@@ -151,10 +151,9 @@ public class Eleicao {
     c1=this.mapaCidadaos.get(cc);
     boolean flag = false;
     if ( c1 != null ){
-      System.out.println("entrou registo");
       this.mapaVotos.registaVoto (lista);
       c1.setJaVotou(true);
-     this.mapaCidadaos.put(cc , c1 );
+      this.mapaCidadaos.put(cc , c1 );
       flag = true;
     }
     return flag;
