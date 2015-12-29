@@ -66,6 +66,7 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
 
   @Override
     public Cidadao get(Object key) {
+      System.out.println("getting");
       Cidadao cidGet = null;
       try {
         String sql;
@@ -74,8 +75,10 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
         if (rs.next()) {
           cidGet = processRow(rs);
         }
-      } catch (Exception ex) {
-        throw new NullPointerException(ex.getMessage());
+      } 
+      catch(Exception e){
+        //Handle errors for Class.forName
+        e.printStackTrace();
       }
       return cidGet;
     }
@@ -88,6 +91,7 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
           + value.getCC() + ",'" + value.getNome() + "','" + value.getPassword() + "'," + value.getPermissaoAdmin() + "," + value.getPermissaoRR() 
           + "," + value.getPermissaoVotoAntecipado() +  "," + value.getJaVotou() + ")" ;
         ResultSet rs = DataBaseAccess.executeQuery(sql);
+        System.out.println(sql);
 
       } catch (Exception ex) {
         throw new NullPointerException(ex.getMessage());

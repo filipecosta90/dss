@@ -39,14 +39,14 @@ public class MapaVotosDAO implements Map < String , Integer > {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
-protected Integer processRow(ResultSet rs) throws SQLException {
+
+  protected Integer processRow(ResultSet rs) throws SQLException {
     return rs.getInt("totalVotos");
   }
-  
+
   @Override
     public Integer get(Object key) {
-Integer votoGet = null;
+      Integer votoGet = null;
       try {
         String sql;
         sql = "select * from mapaVotos where partidoPolitico='" + key+"'";
@@ -62,11 +62,13 @@ Integer votoGet = null;
 
   @Override
     public Integer put(String key, Integer value) {
-try {
+      try {
         String sql;
         sql = "replace into mapaVotos ( partidoPolitico, totalVotos )  values ('" 
           + key + "' , "  + value  +  ")" ;
         ResultSet rs = DataBaseAccess.executeQuery(sql);
+        System.out.println(sql);
+
       } catch (Exception ex) {
         throw new NullPointerException(ex.getMessage());
       }

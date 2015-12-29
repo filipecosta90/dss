@@ -26,9 +26,9 @@ public class DataBaseAccess {
   private static Connection Conn;
 
 
-  public DataBaseAccess(String hostname, String bd, String user, String password) {
+  public DataBaseAccess() {
     try {
-      init( hostname , bd , user , password );
+      init( "localhost" , "dss" , "dss_USER" , "123" );
     } catch (SQLException ex) {
 
       Logger.getLogger(DataBaseAccess.class.getName()).log(Level.SEVERE, null, ex);
@@ -48,13 +48,13 @@ public class DataBaseAccess {
       Conn = DriverManager.getConnection(url, props);
       Conn.setAutoCommit(false);
     } catch (Exception ex) {
-        throw new NullPointerException(ex.getMessage());
-      }
+      throw new NullPointerException(ex.getMessage());
+    }
   }
 
   public static ResultSet executeQuery(String SQLQuery) throws SQLException {
 
-      ResultSet rset = null;
+    ResultSet rset = null;
     Statement stmt = null;
     stmt = Conn.createStatement();
     rset = stmt.executeQuery(SQLQuery);

@@ -15,22 +15,22 @@ import java.sql.SQLException;
  * @author filipeoliveira
  */
 public class teste {
-    /*
-    public static void main (String args[]) throws ClassNotFoundException{
-        try {
-            DataBaseAccess novo = new DataBaseAccess();
-            String sql = "select * from cidadao";
-        ResultSet rs = DataBaseAccess.executeQuery(sql);
-        while (rs.next()) {              
-        System.out.println(rs.getInt("cc"));
-        System.out.println(rs.getString("nome"));
-}
-      
-    // Do something with the Connection
-} catch (Exception ex) {
-    // handle any errors
-    System.out.println("SQLException: " + ex.getMessage());
+  /*
+     public static void main (String args[]) throws ClassNotFoundException{
+     try {
+     DataBaseAccess novo = new DataBaseAccess();
+     String sql = "select * from cidadao";
+     ResultSet rs = DataBaseAccess.executeQuery(sql);
+     while (rs.next()) {              
+     System.out.println(rs.getInt("cc"));
+     System.out.println(rs.getString("nome"));
+     }
 
-}
-    }*/
+  // Do something with the Connection
+  } catch (Exception ex) {
+  // handle any errors
+  System.out.println("SQLException: " + ex.getMessage());
+
+  }
+  }*/
 }

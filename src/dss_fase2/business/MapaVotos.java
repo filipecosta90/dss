@@ -22,6 +22,7 @@ public class MapaVotos {
   public boolean registaVoto(String Lista){
     Integer numeroVotos;
     numeroVotos = this.votos.get(Lista);
+    numeroVotos++;
     this.votos.put(Lista, numeroVotos);
     return true;
   }

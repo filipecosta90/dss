@@ -96,10 +96,8 @@ public class Cidadao {
     return jaVotou;
   }
 
-  public boolean verificaCC_password(Integer cc, String pass){
-    if(cc.equals(this.CC) && pass.equals(this.password))
-      return true;
-    else return false;
+  public boolean verificaPassword(String pass){
+    return pass.equals(this.password);
   }
 
   public void ativaSessao(){
