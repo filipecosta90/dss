@@ -7,8 +7,12 @@ package dss_fase2.presentation;
 
 import dss_fase2.business.Cidadao;
 import dss_fase2.business.Eleicao;
+import dss_fase2.data.EleicaoDAO;
 import java.awt.Color;
+import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.TreeMap;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
@@ -26,11 +30,14 @@ public class MainWindow extends javax.swing.JFrame {
    */
 
   private void enablePanel( String panel) {
+
+    updateDadosCidadaoAtivo();
+
     this.painel_admin_apresentar_resultado.setVisible(false);
     this.painel_admin_encerrar_votacao.setVisible(false);
     this.painel_admin_iniciar_votacao.setVisible(false);
     this.painel_eleitor_votar.setVisible(false);
-    this.painel_eleitor_votar_antecipadamente.setVisible(false);
+    this.painel_admin_marcar_eleicao.setVisible(false);
     this.painel_sistema_login.setVisible(false);
     this.painel_sistema_sessao.setVisible(false);
 
@@ -50,14 +57,31 @@ public class MainWindow extends javax.swing.JFrame {
         this.painel_sistema_sessao.setVisible(true);
         this.getContentPane().add(painel_sistema_sessao);
         disableSubMenu("login");
+        this.field_titulo_sessao.setVisible(true);
+        this.field_sessao_mensagem.setVisible(true);
+        if (this.eleicao.isPublicadoResultado()){
+          mensagemSessao("Resultados finais", getStringResultados());
+        }
+        if (this.eleicao.isIniciada() == true && this.eleicao.isTerminada() == false ){
+          mensagemSessao("Estão neste momento a decorrer eleições!", getStringInstrucoesVoto());
+        }
+        if ( this.eleicao.isIniciada() && this.eleicao.isTerminada() && this.eleicao.isPublicadoResultado() == false ){
+          mensagemSessao("A eleição foi dada por terminada!", getStringMensagemAguardarResultados());
+        }
+        if (this.eleicao.isMarcada() && this.eleicao.isIniciada() == false ){
+          mensagemSessao("Existe uma eleição marcada mas não iniciada!", getStringMensagemMarcadaNaoIniciada());
+        }
+        if ( this.eleicao.isMarcada() == false ){
+          mensagemSessao("Não existe de momento qualquer eleição marcada!", getStringMensagemSemEleicao());
+        }
         break;
       case "votar": 
         this.painel_eleitor_votar.setVisible(true);
         this.getContentPane().add(painel_eleitor_votar);
         break;
-      case "votar_antecipadamente":
-        this.painel_eleitor_votar_antecipadamente.setVisible(true);
-        this.getContentPane().add(painel_eleitor_votar_antecipadamente);
+      case "marcar_eleicao":
+        this.painel_admin_marcar_eleicao.setVisible(true);
+        this.getContentPane().add(painel_admin_marcar_eleicao);
         break;
       case "iniciar_votacao":
         this.painel_admin_iniciar_votacao.setVisible(true);
@@ -85,10 +109,10 @@ public class MainWindow extends javax.swing.JFrame {
       this.mensagem.setVisible(true);
       this.mensagem.setText(mensagem);
       if (erro == true){
-        this.mensagem.setForeground(Color.RED);
+        this.mensagem.setDisabledTextColor(Color.RED);
       }
       if ( ok == true ){
-        this.mensagem.setForeground(Color.blue);
+        this.mensagem.setDisabledTextColor(Color.blue);
       }
     }
 
@@ -302,7 +326,7 @@ public class MainWindow extends javax.swing.JFrame {
 
   public MainWindow() {
     initComponents();
-    this.eleicao = new Eleicao();
+    this.eleicao = new EleicaoDAO();
 
     //menu sistema
     this.menuSistema.setVisible(true);
@@ -313,9 +337,34 @@ public class MainWindow extends javax.swing.JFrame {
 
     enablePanel("login");
     this.enviaMensagem(false, "", false, false);
+    mensagemSessao("","");
 
   }
 
+  private void mensagemSessao(String titulo, String corpo ){
+    this.field_titulo_sessao.setText(titulo);
+    this.field_sessao_mensagem.setText(corpo);
+  }
+
+  private String getStringResultados (){
+    StringBuilder sb = new StringBuilder();
+    sb.append("Resultados por número de votos\n-----------------------------------\n");
+    TreeMap <String, Integer> mapaResultados = this.eleicao.getResultadoFinal();
+    int pos = 1;
+    for ( String partido: mapaResultados.keySet() ){
+      sb.append(pos).append("º lugar: ").append(partido).append("\ttotal votos: ").append(mapaResultados.get(partido)).append("\n");
+      pos++;
+    }
+    sb.append("\n\nResultados por percentagem de votos\n-----------------------------------\n");
+    TreeMap <String, Float> mapaResultadosPercentagem = this.eleicao.getResultadoFinalPercentagem();
+    pos = 1;
+    DecimalFormat df = new DecimalFormat("###.##");
+    for ( String partido: mapaResultados.keySet() ){
+      sb.append(pos).append("º lugar: ").append(partido).append("\tperc. votos: ").append(  df.format( mapaResultadosPercentagem.get(partido) )).append(" % \n");
+      pos++;
+    }
+    return sb.toString();
+  }
 
   /**
    * This method is called from within the constructor to initialize the form.
@@ -331,11 +380,12 @@ public class MainWindow extends javax.swing.JFrame {
       jLabel10 = new javax.swing.JLabel();
       label_sessao = new javax.swing.JLabel();
       label_nome_cidadao = new javax.swing.JLabel();
-      mensagem = new javax.swing.JLabel();
+      mensagem = new javax.swing.JTextArea();
       painel_admin_encerrar_votacao = new javax.swing.JPanel();
       painel_admin_apresentar_resultado = new javax.swing.JPanel();
       jLabel1 = new javax.swing.JLabel();
-      jLabel4 = new javax.swing.JLabel();
+      jScrollPane1 = new javax.swing.JScrollPane();
+      field_resultados = new javax.swing.JTextArea();
       painel_admin_iniciar_votacao = new javax.swing.JPanel();
       jLabel7 = new javax.swing.JLabel();
       painel_eleitor_votar = new javax.swing.JPanel();
@@ -350,17 +400,30 @@ public class MainWindow extends javax.swing.JFrame {
       radio8 = new javax.swing.JRadioButton();
       radio9 = new javax.swing.JRadioButton();
       radio10 = new javax.swing.JRadioButton();
-      butao_registar_voto = new javax.swing.JButton();
-      painel_eleitor_votar_antecipadamente = new javax.swing.JPanel();
+      botao_registar_voto = new javax.swing.JButton();
+      painel_admin_marcar_eleicao = new javax.swing.JPanel();
       jLabel6 = new javax.swing.JLabel();
+      jLabel3 = new javax.swing.JLabel();
+      jLabel4 = new javax.swing.JLabel();
+      jLabel11 = new javax.swing.JLabel();
+      jLabel12 = new javax.swing.JLabel();
+      field_tipo = new javax.swing.JTextField();
+      field_ano = new javax.swing.JTextField();
+      field_mes = new javax.swing.JTextField();
+      jLabel13 = new javax.swing.JLabel();
+      field_dia = new javax.swing.JTextField();
+      butao_marcar_eleicao = new javax.swing.JButton();
       painel_sistema_sessao = new javax.swing.JPanel();
+      field_titulo_sessao = new javax.swing.JLabel();
+      jScrollPane2 = new javax.swing.JScrollPane();
+      field_sessao_mensagem = new javax.swing.JTextArea();
       painel_sistema_login = new javax.swing.JPanel();
       jLabel5 = new javax.swing.JLabel();
       jLabel8 = new javax.swing.JLabel();
       jLabel9 = new javax.swing.JLabel();
       field_cc = new javax.swing.JTextField();
-      field_password = new javax.swing.JTextField();
       butao_login = new javax.swing.JButton();
+      field_password = new javax.swing.JPasswordField();
       menuBar = new javax.swing.JMenuBar();
       menuSistema = new javax.swing.JMenu();
       item_login = new javax.swing.JMenuItem();
@@ -372,6 +435,7 @@ public class MainWindow extends javax.swing.JFrame {
       item_iniciar_votacao = new javax.swing.JMenuItem();
       item_encerrar_votacao = new javax.swing.JMenuItem();
       item_apresentar_resultado = new javax.swing.JMenuItem();
+      item_marcar_eleicao = new javax.swing.JMenuItem();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
       setTitle("frame_principal");
@@ -396,11 +460,22 @@ public class MainWindow extends javax.swing.JFrame {
       painel_informacao.add(label_nome_cidadao);
       label_nome_cidadao.setBounds(162, 6, 200, 16);
 
-      mensagem.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
-      mensagem.setForeground(new java.awt.Color(0, 153, 153));
-      mensagem.setText("Mensagem");
+      mensagem.setEditable(false);
+      mensagem.setBackground(new java.awt.Color(214, 217, 233));
+      mensagem.setColumns(20);
+      mensagem.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+      mensagem.setLineWrap(true);
+      mensagem.setRows(5);
+      mensagem.setToolTipText("");
+      mensagem.setWrapStyleWord(true);
+      mensagem.setBorder(null);
+      mensagem.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+      mensagem.setDragEnabled(false);
+      mensagem.setEnabled(false);
+      mensagem.setFocusable(false);
+      mensagem.setOpaque(false);
       painel_informacao.add(mensagem);
-      mensagem.setBounds(10, 20, 310, 70);
+      mensagem.setBounds(10, 30, 310, 60);
 
       painel_admin_encerrar_votacao.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
       painel_admin_encerrar_votacao.setEnabled(false);
@@ -420,33 +495,25 @@ public class MainWindow extends javax.swing.JFrame {
 
       painel_admin_apresentar_resultado.setEnabled(false);
       painel_admin_apresentar_resultado.setPreferredSize(new java.awt.Dimension(500, 500));
+      painel_admin_apresentar_resultado.setLayout(null);
 
-      jLabel1.setText("apresentar resultado");
+      jLabel1.setText("Resultados Eleitorais:");
+      painel_admin_apresentar_resultado.add(jLabel1);
+      jLabel1.setBounds(182, 100, 135, 16);
 
-      jLabel4.setText("encerrar votacao");
+      field_resultados.setBackground(new java.awt.Color(238, 238, 238));
+      field_resultados.setColumns(20);
+      field_resultados.setLineWrap(true);
+      field_resultados.setRows(20);
+      field_resultados.setWrapStyleWord(true);
+      field_resultados.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+      field_resultados.setDragEnabled(false);
+      field_resultados.setEnabled(false);
+      field_resultados.setOpaque(false);
+      jScrollPane1.setViewportView(field_resultados);
 
-      javax.swing.GroupLayout painel_admin_apresentar_resultadoLayout = new javax.swing.GroupLayout(painel_admin_apresentar_resultado);
-      painel_admin_apresentar_resultado.setLayout(painel_admin_apresentar_resultadoLayout);
-      painel_admin_apresentar_resultadoLayout.setHorizontalGroup(
-          painel_admin_apresentar_resultadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painel_admin_apresentar_resultadoLayout.createSequentialGroup()
-            .addContainerGap(247, Short.MAX_VALUE)
-            .addComponent(jLabel4)
-            .addGap(149, 149, 149))
-          .addGroup(painel_admin_apresentar_resultadoLayout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(jLabel1)
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-          );
-      painel_admin_apresentar_resultadoLayout.setVerticalGroup(
-          painel_admin_apresentar_resultadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(painel_admin_apresentar_resultadoLayout.createSequentialGroup()
-            .addGap(370, 370, 370)
-            .addComponent(jLabel1)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jLabel4)
-            .addGap(158, 158, 158))
-          );
+      painel_admin_apresentar_resultado.add(jScrollPane1);
+      jScrollPane1.setBounds(60, 134, 379, 300);
 
       painel_admin_iniciar_votacao.setEnabled(false);
       painel_admin_iniciar_votacao.setPreferredSize(new java.awt.Dimension(500, 500));
@@ -518,53 +585,135 @@ public class MainWindow extends javax.swing.JFrame {
       painel_eleitor_votar.add(radio10);
       radio10.setBounds(290, 240, 128, 23);
 
-      butao_registar_voto.setText("Registar Voto");
-      butao_registar_voto.addActionListener(new java.awt.event.ActionListener() {
+      botao_registar_voto.setText("Registar Voto");
+      botao_registar_voto.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-          butao_registar_votoActionPerformed(evt);
+          botao_registar_votoActionPerformed(evt);
         }
       });
-      painel_eleitor_votar.add(butao_registar_voto);
-      butao_registar_voto.setBounds(360, 360, 128, 29);
+      painel_eleitor_votar.add(botao_registar_voto);
+      botao_registar_voto.setBounds(360, 360, 128, 29);
 
-      painel_eleitor_votar_antecipadamente.setEnabled(false);
-      painel_eleitor_votar_antecipadamente.setPreferredSize(new java.awt.Dimension(500, 500));
+      painel_admin_marcar_eleicao.setEnabled(false);
+      painel_admin_marcar_eleicao.setPreferredSize(new java.awt.Dimension(500, 500));
 
-      jLabel6.setText("votar antecipadamente");
+      jLabel6.setText("marcar eleição");
 
-      javax.swing.GroupLayout painel_eleitor_votar_antecipadamenteLayout = new javax.swing.GroupLayout(painel_eleitor_votar_antecipadamente);
-      painel_eleitor_votar_antecipadamente.setLayout(painel_eleitor_votar_antecipadamenteLayout);
-      painel_eleitor_votar_antecipadamenteLayout.setHorizontalGroup(
-          painel_eleitor_votar_antecipadamenteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(painel_eleitor_votar_antecipadamenteLayout.createSequentialGroup()
-            .addContainerGap()
+      jLabel3.setText("Tipo Eleição");
+
+      jLabel4.setText("Data Eleição:");
+
+      jLabel11.setText("Ano");
+
+      jLabel12.setText("Mês");
+
+      field_tipo.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+          field_tipoActionPerformed(evt);
+        }
+      });
+
+      jLabel13.setText("Dia");
+
+      field_dia.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+          field_diaActionPerformed(evt);
+        }
+      });
+
+      butao_marcar_eleicao.setText("marcar eleição");
+      butao_marcar_eleicao.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+          butao_marcar_eleicaoActionPerformed(evt);
+        }
+      });
+
+      javax.swing.GroupLayout painel_admin_marcar_eleicaoLayout = new javax.swing.GroupLayout(painel_admin_marcar_eleicao);
+      painel_admin_marcar_eleicao.setLayout(painel_admin_marcar_eleicaoLayout);
+      painel_admin_marcar_eleicaoLayout.setHorizontalGroup(
+          painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(painel_admin_marcar_eleicaoLayout.createSequentialGroup()
+            .addGroup(painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(painel_admin_marcar_eleicaoLayout.createSequentialGroup()
+                .addGap(193, 193, 193)
+                .addComponent(jLabel6))
+              .addGroup(painel_admin_marcar_eleicaoLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                  .addComponent(butao_marcar_eleicao)
+                  .addGroup(painel_admin_marcar_eleicaoLayout.createSequentialGroup()
+                    .addGroup(painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                      .addComponent(jLabel3)
+                      .addComponent(jLabel4))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                      .addComponent(field_tipo)
+                      .addGroup(painel_admin_marcar_eleicaoLayout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(field_ano, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel12)
+                        .addGap(1, 1, 1)
+                        .addComponent(field_mes, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(field_dia, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                        .addGap(90, 90, 90))
+                        );
+      painel_admin_marcar_eleicaoLayout.setVerticalGroup(
+          painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(painel_admin_marcar_eleicaoLayout.createSequentialGroup()
+            .addGap(100, 100, 100)
             .addComponent(jLabel6)
-            .addContainerGap(351, Short.MAX_VALUE))
-          );
-      painel_eleitor_votar_antecipadamenteLayout.setVerticalGroup(
-          painel_eleitor_votar_antecipadamenteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(painel_eleitor_votar_antecipadamenteLayout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(jLabel6)
-            .addContainerGap(478, Short.MAX_VALUE))
-          );
+            .addGap(14, 14, 14)
+            .addGroup(painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(field_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jLabel3))
+            .addGap(12, 12, 12)
+            .addGroup(painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(field_ano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel11)
+                .addComponent(jLabel4))
+              .addGroup(painel_admin_marcar_eleicaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(field_mes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel12)
+                .addComponent(jLabel13)
+                .addComponent(field_dia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGap(59, 59, 59)
+            .addComponent(butao_marcar_eleicao)
+            .addContainerGap())
+            );
 
+      painel_sistema_sessao.setBounds(new java.awt.Rectangle(0, 0, 0, 0));
       painel_sistema_sessao.setEnabled(false);
-      painel_sistema_sessao.setLocation(new java.awt.Point(100, 0));
-      painel_sistema_sessao.setMaximumSize(new java.awt.Dimension(400, 500));
-      painel_sistema_sessao.setMinimumSize(new java.awt.Dimension(400, 500));
-      painel_sistema_sessao.setPreferredSize(new java.awt.Dimension(400, 500));
+      painel_sistema_sessao.setMaximumSize(new java.awt.Dimension(500, 500));
+      painel_sistema_sessao.setMinimumSize(new java.awt.Dimension(500, 500));
+      painel_sistema_sessao.setPreferredSize(new java.awt.Dimension(500, 500));
+      painel_sistema_sessao.setLayout(null);
 
-      javax.swing.GroupLayout painel_sistema_sessaoLayout = new javax.swing.GroupLayout(painel_sistema_sessao);
-      painel_sistema_sessao.setLayout(painel_sistema_sessaoLayout);
-      painel_sistema_sessaoLayout.setHorizontalGroup(
-          painel_sistema_sessaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGap(0, 400, Short.MAX_VALUE)
-          );
-      painel_sistema_sessaoLayout.setVerticalGroup(
-          painel_sistema_sessaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGap(0, 500, Short.MAX_VALUE)
-          );
+      field_titulo_sessao.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
+      field_titulo_sessao.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+      field_titulo_sessao.setText("jLabel14");
+      painel_sistema_sessao.add(field_titulo_sessao);
+      field_titulo_sessao.setBounds(10, 110, 480, 17);
+
+      field_sessao_mensagem.setBackground(new java.awt.Color(238, 238, 238));
+      field_sessao_mensagem.setColumns(20);
+      field_sessao_mensagem.setLineWrap(true);
+      field_sessao_mensagem.setRows(5);
+      field_sessao_mensagem.setWrapStyleWord(true);
+      field_sessao_mensagem.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+      field_sessao_mensagem.setDragEnabled(false);
+      field_sessao_mensagem.setEnabled(false);
+      field_sessao_mensagem.setFocusable(false);
+      field_sessao_mensagem.setOpaque(false);
+      jScrollPane2.setViewportView(field_sessao_mensagem);
+
+      painel_sistema_sessao.add(jScrollPane2);
+      jScrollPane2.setBounds(6, 134, 488, 310);
 
       painel_sistema_login.setPreferredSize(new java.awt.Dimension(500, 500));
 
@@ -583,9 +732,6 @@ public class MainWindow extends javax.swing.JFrame {
           field_ccActionPerformed(evt);
         }
       });
-
-      field_password.setPreferredSize(new java.awt.Dimension(160, 28));
-      field_password.setSize(new java.awt.Dimension(160, 28));
 
       butao_login.setLabel("Login");
       butao_login.addActionListener(new java.awt.event.ActionListener() {
@@ -610,8 +756,8 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(jLabel9))
                   .addGap(18, 18, 18)
                   .addGroup(painel_sistema_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(field_password, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(field_cc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addComponent(field_cc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(field_password)))))
             .addContainerGap(125, Short.MAX_VALUE))
           );
       painel_sistema_loginLayout.setVerticalGroup(
@@ -698,6 +844,14 @@ public class MainWindow extends javax.swing.JFrame {
       });
       menuAdmin.add(item_apresentar_resultado);
 
+      item_marcar_eleicao.setText("marcar eleição");
+      item_marcar_eleicao.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+          item_marcar_eleicaoActionPerformed(evt);
+        }
+      });
+      menuAdmin.add(item_marcar_eleicao);
+
       menuBar.add(menuAdmin);
 
       setJMenuBar(menuBar);
@@ -711,7 +865,7 @@ public class MainWindow extends javax.swing.JFrame {
           .addComponent(painel_sistema_sessao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(painel_sistema_login, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(painel_eleitor_votar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(painel_eleitor_votar_antecipadamente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(painel_admin_marcar_eleicao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(painel_admin_apresentar_resultado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(painel_informacao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           );
@@ -724,7 +878,7 @@ public class MainWindow extends javax.swing.JFrame {
             .addGap(120, 120, 120)
             .addComponent(painel_sistema_login, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(painel_eleitor_votar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(painel_eleitor_votar_antecipadamente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(painel_admin_marcar_eleicao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(painel_admin_apresentar_resultado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(painel_informacao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           );
@@ -733,20 +887,37 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
   private void item_votarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_votarActionPerformed
-    if ( this.cidadaoActivo.getJaVotou() == false ){
-      enablePanel("votar");
-      int i = 1;
-      for(String nomeLista : this.eleicao.getMapaListas().keySet()) {
-        enableRadio(i, nomeLista);
-        System.out.println(nomeLista);
-        i++;
+
+    if ( this.eleicao.isMarcada() == true ){
+      if (  this.eleicao.isIniciada() == true ){
+        if ( this.eleicao.isTerminada() == false ){
+          if ( this.cidadaoActivo.getJaVotou() == false ){
+            enablePanel("votar");
+            int i = 1;
+            for(String nomeLista : this.eleicao.getMapaListas().keySet()) {
+              enableRadio(i, nomeLista);
+              System.out.println(nomeLista);
+              i++;
+            }
+            for (  ; i <= 10; i++ ){
+              disableRadio(i);
+            }
+          }
+          else {
+            enviaMensagem( true, "Já exerceu o seu direito de voto!", true, false );
+          }
+        }
+
+        else {
+          enviaMensagem( true, "A votação já foi terminada. Não pode registar voto!", true, false );
+        }
       }
-      for (  ; i <= 10; i++ ){
-        disableRadio(i);
+      else {
+        enviaMensagem( true, "Não existe nenhuma votação iniciada!", true, false );
       }
     }
-    else {
-      enviaMensagem(true, "Já efectuou o voto!", true, false );
+    else{
+      enviaMensagem( true, "Não existe nenhuma votação marcada!", true, false );
     }
   }//GEN-LAST:event_item_votarActionPerformed
 
@@ -762,31 +933,155 @@ public class MainWindow extends javax.swing.JFrame {
   }//GEN-LAST:event_item_logoutActionPerformed
 
   private void item_votar_antecipadamenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_votar_antecipadamenteActionPerformed
-    enablePanel("votar_antecipadamente");
+    if ( this.eleicao.isMarcada() == true ){
+      if (  this.eleicao.isIniciada() == true ){
+        if ( this.eleicao.isTerminada() == false ){
+          if ( this.cidadaoActivo.podeVotarAntecipadamente() ){
+            if ( this.cidadaoActivo.getJaVotou() == false ){
+              enablePanel("votar");
+              int i = 1;
+              for(String nomeLista : this.eleicao.getMapaListas().keySet()) {
+                enableRadio(i, nomeLista);
+                System.out.println(nomeLista);
+                i++;
+              }
+              for (  ; i <= 10; i++ ){
+                disableRadio(i);
+              }
+            }
+            else {
+              enviaMensagem( true, "Já exerceu o seu direito de voto!", true, false );
+            }
+          }
+          else {
+            enviaMensagem( true, "Não tem permissão de voto antecipado!", true, false );
+          }
+        }
+
+        else {
+          enviaMensagem( true, "A votação já foi terminada. Não pode registar voto!", true, false );
+        }
+      }
+      else {
+        enviaMensagem( true, "Não existe nenhuma votação iniciada!", true, false );
+      }
+    }
+    else{
+      enviaMensagem( true, "Não existe nenhuma votação marcada!", true, false );
+    }
   }//GEN-LAST:event_item_votar_antecipadamenteActionPerformed
 
   private void item_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_loginActionPerformed
     enablePanel("login");
-
   }//GEN-LAST:event_item_loginActionPerformed
 
   private void item_iniciar_votacaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_iniciar_votacaoActionPerformed
-    enablePanel("iniciar_votacao");
+    if ( this.cidadaoActivo.getPermissaoAdmin() ){
+      if ( this.eleicao.isMarcada() == true ){
+        if ( this.eleicao.isIniciada() ){
+          enviaMensagem( true, "A votação já foi iniciada anteriormente!", true, false );
+        } 
+        else if ( this.eleicao.isTerminada() ){
+          enviaMensagem( true, "A votação já foi terminada! Não a pode voltar a iniciar!", true, false );
+        }
+        else{
+          this.eleicao.abreVotacao(this.cidadaoActivo.getCC());
+          enviaMensagem( true, "A votação foi iniciada pelo admin: "+ this.cidadaoActivo.getNome() , false, true );
+        }
+      }
+      else {
+        enviaMensagem( true, "Não existe uma votação marcada!", true, false );               
+      }
+    }
+    else {
+      enviaMensagem( true, "Não tem permissões para iniciar a votação!", true, false );
+    }
+    enablePanel("sessao");
   }//GEN-LAST:event_item_iniciar_votacaoActionPerformed
 
   private void item_encerrar_votacaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_encerrar_votacaoActionPerformed
-    enablePanel("encerrar_votacao");
+    if ( this.cidadaoActivo.getPermissaoAdmin(  ) ){
+      if ( this.eleicao.isMarcada() == true ){
+        if (  this.eleicao.isTerminada() == true ){
+          enviaMensagem( true, "A votação já foi terminada anteriormente!", true, false );
+        }
+        else{
+          if (this.eleicao.isIniciada() == false ){
+            enviaMensagem( true, "Não existe nenhuma votação iniciada!", true, false );
+          }
+          else {
+            this.eleicao.encerraVotacao(this.cidadaoActivo.getCC());
+            enviaMensagem( true, "A votação foi terminada pelo admin: "+ this.cidadaoActivo.getNome() , false, true );
+          }
+        }
+      }
+      else{
+        enviaMensagem( true, "Não existe uma votação marcada!", true, false );
+      }
+    }
+    else {
+      enviaMensagem( true, "Não tem permissões para terminar a votação!", true, false );
+    }
+    enablePanel("sessao");
   }//GEN-LAST:event_item_encerrar_votacaoActionPerformed
 
   private void item_apresentar_resultadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_apresentar_resultadoActionPerformed
-    enablePanel("apresentar_resultado");
+    if ( this.cidadaoActivo.getPermissaoAdmin(  ) ){
+      if ( this.eleicao.isMarcada() == true ){
+        if (this.eleicao.isIniciada() ){
+          if (this.eleicao.isTerminada() ){
+            if (this.eleicao.isPublicadoResultado() == false ){
+              enablePanel("apresentar_resultado");
+              StringBuilder sb = new StringBuilder();
+              sb.append("Resultados por número de votos\n-----------------------------------\n");
+              TreeMap <String, Integer> mapaResultados = this.eleicao.getResultadoFinal();
+              int pos = 1;
+              for ( String partido: mapaResultados.keySet() ){
+                sb.append(pos).append("º lugar: ").append(partido).append("\ttotal votos: ").append(mapaResultados.get(partido)).append("\n");
+                pos++;
+              }
+              sb.append("\n\nResultados por percentagem de votos\n-----------------------------------\n");
+              TreeMap <String, Float> mapaResultadosPercentagem = this.eleicao.getResultadoFinalPercentagem();
+              pos = 1;
+              DecimalFormat df = new DecimalFormat("###.##");
+              for ( String partido: mapaResultados.keySet() ){
+                sb.append(pos).append("º lugar: ").append(partido).append("\tperc. votos: ").append(  df.format( mapaResultadosPercentagem.get(partido) )).append(" % \n");
+                pos++;
+              }
+              this.field_resultados.append(sb.toString());
+              enviaMensagem( true, "Os resultados foram apresentados pelo admin: "+ this.cidadaoActivo.getNome() , false, true );
+              this.eleicao.setPublicadoResultado(true);
+            }
+            else {
+              enviaMensagem( true, "Os resultados já foram calculados!", true, false );
+
+            }
+          }
+          else {
+            enviaMensagem( true, "A votação ainda está a decorrer! Termine-a primeiramente!", true, false );
+
+          }
+        }
+        else {
+          enviaMensagem( true, "Existe uma Eleição mas a sua votação não foi ainda iniciada!", true, false );
+
+        }
+      }
+      else {
+        enviaMensagem( true, "Não existe uma votação marcada!", true, false );
+      }
+
+    }
+    else {
+      enviaMensagem( true, "Não tem permissões para apresentar resultados eleitorais!", true, false );
+    }
+
   }//GEN-LAST:event_item_apresentar_resultadoActionPerformed
 
   private void butao_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butao_loginActionPerformed
 
     int cc =  Integer.parseInt(field_cc.getText());
     String pass = field_password.getText();
-    System.out.println("going to try logging in as " + cc + "pass: " + pass );
     if (this.eleicao.verificaLogin(cc, pass) == true ){
       this.cidadaoActivo = this.eleicao.iniciaSessaoNaEleicao(cc);
       this.enviaMensagem(true, "Bem vindo", false, true);
@@ -810,7 +1105,7 @@ public class MainWindow extends javax.swing.JFrame {
     // TODO add your handling code here:
   }//GEN-LAST:event_field_ccActionPerformed
 
-  private void butao_registar_votoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butao_registar_votoActionPerformed
+  private void botao_registar_votoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botao_registar_votoActionPerformed
     boolean resultado;
     int index = existeSeleccaoBotoesVoto();
     if ( index > 0 ){
@@ -829,7 +1124,45 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // TODO add your handling code here:
-  }//GEN-LAST:event_butao_registar_votoActionPerformed
+  }//GEN-LAST:event_botao_registar_votoActionPerformed
+
+  private void item_marcar_eleicaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_marcar_eleicaoActionPerformed
+    if ( this.cidadaoActivo.getPermissaoRR() ){
+      if ( this.eleicao.isMarcada() ){
+        enviaMensagem( true, "A eleição já se encontra marcada!", true, false );
+      }
+      else{
+        enablePanel("marcar_eleicao");   
+      }
+    }
+    else {
+      enviaMensagem( true, "Não tem permissões de Representante da República!", true, false );
+    }             
+  }//GEN-LAST:event_item_marcar_eleicaoActionPerformed
+
+  private void field_tipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_field_tipoActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_field_tipoActionPerformed
+
+  private void butao_marcar_eleicaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butao_marcar_eleicaoActionPerformed
+    StringBuilder sb = new StringBuilder();
+    sb.append(this.field_ano.getText()).append(this.field_mes.getText()).append(this.field_dia.getText());
+    String dataFinal = sb.toString();
+    if ( dataFinal.length() <= 8 && dataFinal.matches("[0-9]+") ) {
+      this.eleicao.setTipo( this.field_tipo.getText() );
+      this.eleicao.setDataEleicao(sb.toString());
+      this.eleicao.setMarcada(true);
+      this.eleicao.setMarcadaPorRR(this.cidadaoActivo.getCC());
+    }
+    else {
+      enviaMensagem( true, "A data apresentada não apresenta ter um formato válido!", true, false );
+    }
+    enablePanel("sessao");
+  }//GEN-LAST:event_butao_marcar_eleicaoActionPerformed
+
+  private void field_diaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_field_diaActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_field_diaActionPerformed
 
   /**
    * @param args the command line arguments
@@ -867,30 +1200,45 @@ public class MainWindow extends javax.swing.JFrame {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton botao_registar_voto;
   private javax.swing.JButton butao_login;
-  private javax.swing.JButton butao_registar_voto;
+  private javax.swing.JButton butao_marcar_eleicao;
   private javax.swing.ButtonGroup butoesVotar;
+  private javax.swing.JTextField field_ano;
   private javax.swing.JTextField field_cc;
-  private javax.swing.JTextField field_password;
+  private javax.swing.JTextField field_dia;
+  private javax.swing.JTextField field_mes;
+  private javax.swing.JPasswordField field_password;
+  private javax.swing.JTextArea field_resultados;
+  private javax.swing.JTextArea field_sessao_mensagem;
+  private javax.swing.JTextField field_tipo;
+  private javax.swing.JLabel field_titulo_sessao;
   private javax.swing.JMenuItem item_apresentar_resultado;
   private javax.swing.JMenuItem item_encerrar_votacao;
   private javax.swing.JMenuItem item_iniciar_votacao;
   private javax.swing.JMenuItem item_login;
   private javax.swing.JMenuItem item_logout;
+  private javax.swing.JMenuItem item_marcar_eleicao;
   private javax.swing.JMenuItem item_votar;
   private javax.swing.JMenuItem item_votar_antecipadamente;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
+  private javax.swing.JLabel jLabel11;
+  private javax.swing.JLabel jLabel12;
+  private javax.swing.JLabel jLabel13;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
   private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
+  private javax.swing.JScrollPane jScrollPane1;
+  private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JLabel label_nome_cidadao;
   private javax.swing.JLabel label_sessao;
-  private javax.swing.JLabel mensagem;
+  private javax.swing.JTextArea mensagem;
   private javax.swing.JMenu menuAdmin;
   private javax.swing.JMenuBar menuBar;
   private javax.swing.JMenu menuEleitor;
@@ -898,8 +1246,8 @@ public class MainWindow extends javax.swing.JFrame {
   private javax.swing.JPanel painel_admin_apresentar_resultado;
   private javax.swing.JPanel painel_admin_encerrar_votacao;
   private javax.swing.JPanel painel_admin_iniciar_votacao;
+  private javax.swing.JPanel painel_admin_marcar_eleicao;
   private javax.swing.JPanel painel_eleitor_votar;
-  private javax.swing.JPanel painel_eleitor_votar_antecipadamente;
   private javax.swing.JPanel painel_informacao;
   private javax.swing.JPanel painel_sistema_login;
   private javax.swing.JPanel painel_sistema_sessao;
@@ -914,4 +1262,49 @@ public class MainWindow extends javax.swing.JFrame {
   private javax.swing.JRadioButton radio8;
   private javax.swing.JRadioButton radio9;
   // End of variables declaration//GEN-END:variables
+
+  private String getStringInstrucoesVoto() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Informação Útil:\n-----------------------------------\n");
+    sb.append(">>> Quais são os elementos que constam do boletim electrónico de voto?\n");
+    sb.append("\n\tNa linha correspondente a cada candidatura, figura um círculo em branco destinado a ser assinalado com a escolha do eleitor. Após a seleção, o eleitor deverá clicar no botão 'registar voto'. Deverá receber uma mensagem de confirmação do registo.\n\n");
+    sb.append(">>> Posso votar em Branco? Como procedo?\n");
+    sb.append("\n\tSim. No boletim electónico de voto, figura um círculo em branco destinado a ser assinalado com a escolha do voto em branco por parte do eleitor.\n\n");
+    return sb.toString();
+  }
+
+  private String getStringMensagemAguardarResultados() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Obrigado por exercer o seu direito de voto.\nAguarde a publicação dos resultados gerais.\n");
+    return sb.toString();
+  }
+
+  private String getStringMensagemMarcadaNaoIniciada() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Existe neste momento uma eleição marcada do tipo: ").append(this.eleicao.getTipo()).append(", para o dia: ").append(this.eleicao.getDataEleicao());
+    sb.append(".\nDeverá aguardar o seu início.");
+
+    return sb.toString();
+  }
+
+  private String getStringMensagemSemEleicao() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Não existe de momento nenhuma eleição agendada. \n\nSe considerar estes dados anómalos por favor contacte a Comissão Nacional de Eleições:\n");           
+    sb.append("Localização\n");
+    sb.append("Av. D. Carlos I, 128 - 7º piso\n");
+    sb.append("1249-065 LISBOA\n");
+    sb.append("Telef.: 21 3923800\n");
+    sb.append("Fax: 21 3953543\n");
+    sb.append("e-mail: cne@cne.pt\n");
+    sb.append("\n");
+    sb.append("Horário de funcionamento\n");
+    sb.append("Segunda a Sexta-feira - 9:30 / 18:00 horas\n");
+    return sb.toString();
+  }
+
+  private void updateDadosCidadaoAtivo() {
+    if (this.cidadaoActivo != null){
+      this.cidadaoActivo = this.eleicao.getSessaoCidadao(this.cidadaoActivo.getCC());
+    }
+  }
 }

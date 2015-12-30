@@ -12,6 +12,7 @@ import java.util.Set;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  *
@@ -117,7 +118,19 @@ public class MapaVotosDAO implements Map < String , Integer > {
 
   @Override
     public Set<String> keySet() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      TreeSet<String> chaves = new TreeSet<String>();
+      try {
+        String sql;
+        sql = "select * from mapaVotos";
+        ResultSet rs = DataBaseAccess.executeQuery(sql);
+        while (rs.next()) {
+          String nomePartido = rs.getString("partidoPolitico");
+          chaves.add(nomePartido);
+        }
+      } catch (Exception ex) {
+        throw new NullPointerException(ex.getMessage());
+      }
+      return chaves;
     }
 
   @Override

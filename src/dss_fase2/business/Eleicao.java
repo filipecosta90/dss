@@ -6,10 +6,15 @@
 package dss_fase2.business;
 
 import dss_fase2.data.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -26,23 +31,26 @@ public class Eleicao {
   Map < String , Lista > mapaListas;
   Integer marcadaPorRR;
   GregorianCalendar dataEleicao;
+  boolean marcada;
   boolean iniciada;
   boolean terminada;
+  boolean publicadoResultado;
   TreeMap  < String , Integer > resultadoFinal;
   ArrayList < String > log_erros_local;
   private static DataBaseAccess d = new DataBaseAccess();
 
-  public Eleicao (){
+  public Eleicao () {
 
-    this.tipo = null;
+    this.tipo = "";
     this.mapaVotos = new MapaVotos();
     this.mapaCidadaos = new MapaCidadaosDAO();
     this.mapaListas = new MapaListasDAO();
     this.marcadaPorRR = -1;
     this.dataEleicao = new GregorianCalendar();
+    this.marcada=false;
     this.iniciada = false;
-    this.terminada = false;
-    this.resultadoFinal = new TreeMap < String , Integer >();
+    this.terminada = false; 
+    this.publicadoResultado=false;
     this.log_erros_local = new ArrayList < String > (); 
 
   }
@@ -67,9 +75,23 @@ public class Eleicao {
     this.marcadaPorRR = marcadaPorRR;
   }
 
-  public void setDataEleicao(GregorianCalendar dataEleicao) {
-    this.dataEleicao = dataEleicao;
+  public void setDataEleicao(String dataMarcar ) {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    Date date;
+    try {
+      date = sdf.parse(dataMarcar);
+      this.dataEleicao  = new GregorianCalendar();
+      this.dataEleicao.setTime(date);
+    } catch (ParseException ex) {
+      Logger.getLogger(Eleicao.class.getName()).log(Level.SEVERE, null, ex);  
+    }
+
   }
+
+  public void setMarcada(boolean marcada) {
+    this.marcada = marcada;
+  }
+
 
   public void setIniciada(boolean iniciada) {
     this.iniciada = iniciada;
@@ -78,6 +100,11 @@ public class Eleicao {
   public void setTerminada(boolean terminada) {
     this.terminada = terminada;
   }
+
+  public void setPublicadoResultado(boolean publicado) {
+    this.publicadoResultado = publicado;
+  }
+
 
   public void setResultadoFinal(TreeMap<String, Integer> resultadoFinal) {
     this.resultadoFinal = resultadoFinal;
@@ -107,9 +134,18 @@ public class Eleicao {
     return marcadaPorRR;
   }
 
-  public GregorianCalendar getDataEleicao() {
-    return dataEleicao;
+  public String getDataEleicao() {
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    String dataSql = sdf.format(this.dataEleicao.getTime());
+
+    return dataSql;
   }
+
+  public boolean isMarcada() {
+    return this.marcada;
+  }
+
 
   public boolean isIniciada() {
     return iniciada;
@@ -119,8 +155,17 @@ public class Eleicao {
     return terminada;
   }
 
+  public boolean isPublicadoResultado() {
+    return this.publicadoResultado;
+  }
+
+
   public TreeMap<String, Integer> getResultadoFinal() {
-    return resultadoFinal;
+    return this.mapaVotos.getResultadoFinal();
+  }
+
+  public TreeMap<String, Float> getResultadoFinalPercentagem() {
+    return this.mapaVotos.getResultadoFinalPercentagem();
   }
 
   public ArrayList<String> getLog_erros_local() {
@@ -130,7 +175,6 @@ public class Eleicao {
   public boolean verificaLogin(int cc, String password){
     Cidadao c1 = null;
     boolean flag = false;
-    System.out.println("testing for cc");
     c1=this.mapaCidadaos.get(cc);
     if(c1 != null && c1.verificaPassword(password) ){
       flag = true;
@@ -215,16 +259,19 @@ public class Eleicao {
     return true;
   }
 
-  public boolean marcaEleicao(String tipo, GregorianCalendar data, int CCCriador){
+  public boolean marcaEleicao(String tipo, String data, int CCCriador){
     setMarcadaPorRR(CCCriador);
     setDataEleicao(data);
     setTipo(tipo);
     return true;
   }
 
-  public TreeMap  <String , Integer> getResultadoGeral(){
-    return getResultadoFinal();  
+  public Cidadao getSessaoCidadao(Integer cc) {    
+    Cidadao c1 = null;
+    c1=this.mapaCidadaos.get(cc);
+    return c1;    
   }
+
 
 
 }

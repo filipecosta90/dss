@@ -1,3 +1,15 @@
+CREATE TABLE eleicao 
+(
+tipo varchar(80),
+marcadaPorRR int,
+dataEleicao DATE DEFAUT GETDATE(),
+marcada BOOLEAN DEFAULT FALSE,
+iniciada BOOLEAN DEFAULT FALSE,
+terminada BOOLEAN DEFAULT FALSE,
+publicadoResultado BOOLEAN DEFAULT FALSE,
+PRIMARY KEY (dataEleicao)
+);
+
 CREATE TABLE cidadao
 (
 cc int NOT NULL,
