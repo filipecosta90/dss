@@ -1,4 +1,4 @@
-/*
+*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -109,21 +109,15 @@ public class Cidadao {
   }
 
   public boolean podeVotar(){
-    if(this.getJaVotou())
-      return false;
-    else return true;
+    return !this.getJaVotou();
   }
 
   public boolean podeVotarAntecipadamente(){
-    if(this.getPermissaoVotoAntecipado())
-      return true;
-    else return false;
+    return this.getPermissaoVotoAntecipado();
   }
 
   public boolean verificaPermissoesRR(){
-    if(this.getPermissaoRR())
-      return true;
-    else return false;
+    return this.getPermissaoRR();
   }
 
   public boolean verificaPermissoesAdmin(){

@@ -45,7 +45,7 @@ public class DataBaseAccess {
       props.put("password", password);
       Conn = DriverManager.getConnection(url, props);
       Conn.setAutoCommit(true);
-    } catch (Exception ex) {
+    } catch (ClassNotFoundException | SQLException ex) {
       throw new NullPointerException(ex.getMessage());
     }
   }
@@ -59,8 +59,8 @@ public class DataBaseAccess {
   }
 
   public static int executeUpdate(String SQLQuery) throws SQLException {
-    int result = -1;
-    Statement stmt = null;
+    int result;
+    Statement stmt;
     stmt = Conn.createStatement();
     result = stmt.executeUpdate(SQLQuery);
     return result;
@@ -78,7 +78,7 @@ public class DataBaseAccess {
 
   public static boolean executeStatement(String SQLStatement) throws SQLException {
     Boolean result = false;
-    Statement stmt = null;
+    Statement stmt;
     stmt = Conn.createStatement();
     stmt.execute(SQLStatement);
     stmt.close();

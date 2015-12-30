@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 /**
  *
  * @author filipeoliveira
@@ -66,7 +65,6 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
 
   @Override
     public Cidadao get(Object key) {
-      System.out.println("getting");
       Cidadao cidGet = null;
       try {
         String sql;
@@ -77,8 +75,7 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
         }
       } 
       catch(Exception e){
-        //Handle errors for Class.forName
-        e.printStackTrace();
+        throw new NullPointerException(e.getMessage());
       }
       return cidGet;
     }
@@ -94,7 +91,6 @@ public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
           + "', password='" + value.getPassword() + "' , permissaoAdmin=" + value.getPermissaoAdmin() 
           + ", permissaoRR=" + value.getPermissaoRR() + ", permissaoVotoAntecipado=" + value.getPermissaoVotoAntecipado()
           + ", jaVotou=" + value.getJaVotou();
-        System.out.println(sql);
         DataBaseAccess.executeUpdate(sql);
 
       } catch (Exception ex) {

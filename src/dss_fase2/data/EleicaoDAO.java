@@ -11,16 +11,7 @@ package dss_fase2.data;
  */
 
 import dss_fase2.business.Eleicao;
-import java.sql.DriverManager;
-import java.util.Properties;
-import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class EleicaoDAO extends Eleicao{

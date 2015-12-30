@@ -80,7 +80,6 @@ public class MapaVotosDAO implements Map < String , Integer > {
         try {
           String sql;
           sql = "UPDATE mapaVotos SET totalVotos="+value + " WHERE partidoPolitico='"+key+"'";
-          System.out.println(sql);       
           DataBaseAccess.executeUpdate(sql);
         } catch (Exception ex) {
           throw new NullPointerException(ex.getMessage());
@@ -89,9 +88,7 @@ public class MapaVotosDAO implements Map < String , Integer > {
       else {
         try {
           String sql;
-          sql = "INSERT INTO mapaVotos ( partidoPolitico, totalVotos )  VALUES ('" 
-            + key + "' , "  + value  +  ") ";
-          System.out.println(sql);       
+          sql = "INSERT INTO mapaVotos ( partidoPolitico, totalVotos )  VALUES ('" + key + "' , "  + value  +  ") ";
           DataBaseAccess.executeQuery(sql);
         } catch (Exception ex) {
           throw new NullPointerException(ex.getMessage());

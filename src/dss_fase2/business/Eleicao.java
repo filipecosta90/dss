@@ -36,7 +36,6 @@ public class Eleicao {
   boolean terminada;
   boolean publicadoResultado;
   TreeMap  < String , Integer > resultadoFinal;
-  ArrayList < String > log_erros_local;
   private static DataBaseAccess d = new DataBaseAccess();
 
   public Eleicao () {
@@ -51,7 +50,6 @@ public class Eleicao {
     this.iniciada = false;
     this.terminada = false; 
     this.publicadoResultado=false;
-    this.log_erros_local = new ArrayList < String > (); 
 
   }
 
@@ -105,13 +103,8 @@ public class Eleicao {
     this.publicadoResultado = publicado;
   }
 
-
   public void setResultadoFinal(TreeMap<String, Integer> resultadoFinal) {
     this.resultadoFinal = resultadoFinal;
-  }
-
-  public void setLog_erros_local(ArrayList<String> log_erros_local) {
-    this.log_erros_local = log_erros_local;
   }
 
   public String getTipo() {
@@ -166,10 +159,6 @@ public class Eleicao {
 
   public TreeMap<String, Float> getResultadoFinalPercentagem() {
     return this.mapaVotos.getResultadoFinalPercentagem();
-  }
-
-  public ArrayList<String> getLog_erros_local() {
-    return log_erros_local;
   }
 
   public boolean verificaLogin(int cc, String password){
@@ -232,7 +221,7 @@ public class Eleicao {
     return res;
   }
 
-  public boolean verificaPermissoesAdmin_elei(int cc){
+  public boolean verificaPermissoesAdmin(int cc){
     boolean res = false;
     Cidadao c1 = null;
     c1=this.mapaCidadaos.get(cc);
@@ -240,7 +229,7 @@ public class Eleicao {
     return res;
   }
 
-  public boolean verificaPermissoesRR_elei(int cc){
+  public boolean verificaPermissoesRR(int cc){
     boolean res = false;
     Cidadao c1 = null;
     c1=this.mapaCidadaos.get(cc);
@@ -260,9 +249,10 @@ public class Eleicao {
   }
 
   public boolean marcaEleicao(String tipo, String data, int CCCriador){
-    setMarcadaPorRR(CCCriador);
-    setDataEleicao(data);
-    setTipo(tipo);
+    this.setTipo( tipo );
+    this.setDataEleicao(data);
+    this.setMarcada(true);
+    this.setMarcadaPorRR(CCCriador);   
     return true;
   }
 

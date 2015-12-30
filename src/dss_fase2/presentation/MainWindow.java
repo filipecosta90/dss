@@ -10,12 +10,7 @@ import dss_fase2.business.Eleicao;
 import dss_fase2.data.EleicaoDAO;
 import java.awt.Color;
 import java.text.DecimalFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.TreeMap;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JRadioButton;
 
 /**
  *
@@ -687,7 +682,6 @@ public class MainWindow extends javax.swing.JFrame {
             .addContainerGap())
             );
 
-      painel_sistema_sessao.setBounds(new java.awt.Rectangle(0, 0, 0, 0));
       painel_sistema_sessao.setEnabled(false);
       painel_sistema_sessao.setMaximumSize(new java.awt.Dimension(500, 500));
       painel_sistema_sessao.setMinimumSize(new java.awt.Dimension(500, 500));
@@ -896,7 +890,6 @@ public class MainWindow extends javax.swing.JFrame {
             int i = 1;
             for(String nomeLista : this.eleicao.getMapaListas().keySet()) {
               enableRadio(i, nomeLista);
-              System.out.println(nomeLista);
               i++;
             }
             for (  ; i <= 10; i++ ){
@@ -942,7 +935,6 @@ public class MainWindow extends javax.swing.JFrame {
               int i = 1;
               for(String nomeLista : this.eleicao.getMapaListas().keySet()) {
                 enableRadio(i, nomeLista);
-                System.out.println(nomeLista);
                 i++;
               }
               for (  ; i <= 10; i++ ){
@@ -978,16 +970,19 @@ public class MainWindow extends javax.swing.JFrame {
   private void item_iniciar_votacaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_iniciar_votacaoActionPerformed
     if ( this.cidadaoActivo.getPermissaoAdmin() ){
       if ( this.eleicao.isMarcada() == true ){
-        if ( this.eleicao.isIniciada() ){
-          enviaMensagem( true, "A votação já foi iniciada anteriormente!", true, false );
-        } 
-        else if ( this.eleicao.isTerminada() ){
-          enviaMensagem( true, "A votação já foi terminada! Não a pode voltar a iniciar!", true, false );
+        if ( this.eleicao.isIniciada() == false ){
+          if ( this.eleicao.isTerminada() == false ){
+            this.eleicao.abreVotacao(this.cidadaoActivo.getCC());
+            enviaMensagem( true, "A votação foi iniciada pelo admin: "+ this.cidadaoActivo.getNome() , false, true );
+          }
+          else{
+            enviaMensagem( true, "A votação já foi terminada! Não a pode voltar a iniciar!", true, false );
+          }
         }
         else{
-          this.eleicao.abreVotacao(this.cidadaoActivo.getCC());
-          enviaMensagem( true, "A votação foi iniciada pelo admin: "+ this.cidadaoActivo.getNome() , false, true );
-        }
+          enviaMensagem( true, "A votação já foi iniciada anteriormente!", true, false );
+        } 
+
       }
       else {
         enviaMensagem( true, "Não existe uma votação marcada!", true, false );               
@@ -1149,10 +1144,7 @@ public class MainWindow extends javax.swing.JFrame {
     sb.append(this.field_ano.getText()).append(this.field_mes.getText()).append(this.field_dia.getText());
     String dataFinal = sb.toString();
     if ( dataFinal.length() <= 8 && dataFinal.matches("[0-9]+") ) {
-      this.eleicao.setTipo( this.field_tipo.getText() );
-      this.eleicao.setDataEleicao(sb.toString());
-      this.eleicao.setMarcada(true);
-      this.eleicao.setMarcadaPorRR(this.cidadaoActivo.getCC());
+      this.eleicao.marcaEleicao( this.field_tipo.getText() , dataFinal, this.cidadaoActivo.getCC());
     }
     else {
       enviaMensagem( true, "A data apresentada não apresenta ter um formato válido!", true, false );
@@ -1180,22 +1172,16 @@ public class MainWindow extends javax.swing.JFrame {
           break;
         }
       }
-    } catch (ClassNotFoundException ex) {
-      java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-      java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-      java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
       java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
     //</editor-fold>
 
+    //</editor-fold>
+
     /* Create and display the form */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() {
-        new MainWindow().setVisible(true);
-      }
+    java.awt.EventQueue.invokeLater(() -> {
+      new MainWindow().setVisible(true);
     });
   }
 

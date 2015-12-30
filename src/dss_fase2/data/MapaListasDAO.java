@@ -6,13 +6,10 @@
 package dss_fase2.data;
 import dss_fase2.business.Lista;
 import java.util.Collection;
-
 import java.util.Map;
 import java.util.Set;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.TreeSet;
 
 /**
