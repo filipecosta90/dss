@@ -16,7 +16,7 @@ import java.util.TreeSet;
 
 /**
  *
- * @author filipeoliveira
+ * @author grupo19
  */
 public class MapaVotosDAO implements Map < String , Integer > {
 

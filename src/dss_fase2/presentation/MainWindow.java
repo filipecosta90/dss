@@ -14,7 +14,7 @@ import java.util.TreeMap;
 
 /**
  *
- * @author filipeoliveira
+ * @author grupo19
  */
 public class MainWindow extends javax.swing.JFrame {
   private Cidadao cidadaoActivo;

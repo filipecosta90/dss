@@ -7,7 +7,7 @@ package dss_fase2.data;
 
 /**
  *
- * @author filipeoliveira
+ * @author grupo19
  */
 
 import dss_fase2.business.Eleicao;

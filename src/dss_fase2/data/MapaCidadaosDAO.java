@@ -13,7 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 /**
  *
- * @author filipeoliveira
+ * @author grupo19
  */
 public class MapaCidadaosDAO  implements Map< Integer , Cidadao > {
 
